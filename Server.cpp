@@ -7,6 +7,7 @@
 #include <algorithm>
 
 using namespace Sync;
+using namespace std; // So that declarations don't have to be prefaced with 'std::'
 
 // This thread handles the server operations
 class ServerThread : public Thread
@@ -21,22 +22,46 @@ public:
     ~ServerThread()
     {
         // Cleanup
-	//...
+        ///TODO: write comment for what this does
+        for(vector<int>::iterator x = thread.begin(); x != thread.end(); x++) {
+            kill(*x, SIGKILL);
+        }
     }
 
     virtual long ThreadMain()
     {
+        ///TODO: change up variable names
+        ByteArray data; ///TODO: what is this for?
+        string store; ///TODO: what is this for?
+
         // Wait for a client socket connection
         Socket* newConnection = new Socket(server.Accept());
 
+        ///TODO: change up this section
+        thread.push_back(getpid()); ///TODO: what is this for?
+        ServerThread* serverThread = new ServerThread(server); ///TODO: what is this for?
+
         // A reference to this pointer 
         Socket& socketReference = *newConnection;
-	//You can use this to read data from socket and write data to socket. You may want to put this read/write somewhere else. You may use ByteArray
-	// Wait for data
-        //socketReference.Read(data);
-        // Send it back
-        //socketReference.Write(data);
-	return 1;
+
+	    while(true) { ///TODO: what is the loop for?    
+            // Wait for data
+            socketReference.Read(data);
+
+            store = data.ToString(); ///TODO:
+            cout << store << endl; ///TODO:
+
+            for(int x = 0; x < store.length(); x++) { ///TODO:
+                store[x] = toupper(store[x]); ///TODO:
+            }
+
+            data = ByteArray(store); ///TODO:
+
+            // Send it back
+            socketReference.Write(data);
+        }
+        
+	    return 1;
     }
 };
 

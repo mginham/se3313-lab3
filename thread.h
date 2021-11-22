@@ -1,3 +1,5 @@
+// Did not edit this file
+
 #ifndef THREAD_H
 #define THREAD_H
 
