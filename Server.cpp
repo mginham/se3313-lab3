@@ -5,12 +5,12 @@
 #include <list>
 #include <vector>
 #include <algorithm>
-#include <signal.h> ///TODO: what is this for?
+#include <signal.h> // Allows for SIGKILL command to be used
 
 using namespace Sync;
 using namespace std; // So that declarations don't have to be prefaced with 'std::'
 
-std::vector<int> threads; ///TODO:
+std::vector<int> threadArray; // A dynamic array to track all created threads
 
 // This thread handles the server operations
 class ServerThread : public Thread
@@ -24,49 +24,55 @@ public:
 
     ~ServerThread()
     {
-        // Cleanup
-        ///TODO: write comment for what this does
-        for(vector<int>::iterator x = threads.begin(); x != threads.end(); x++) {
-            kill(*x, SIGKILL);
+        // Cleanup: iterate through every object in the thread array and terminate it
+        for(vector<int>::iterator x = threadArray.begin(); x != threadArray.end(); x++) {
+            kill(*x, SIGKILL); // Terminate the current thread
         }
     }
 
     virtual long ThreadMain()
     {
-        ///TODO: change up variable names
-        ByteArray data; ///TODO: what is this for?
-        string store; ///TODO: what is this for?
+        ByteArray textInput; // Text received from the client
+        string temp; // Dummy string to help manipulate the string
 
         // Wait for a client socket connection
         Socket* newConnection = new Socket(server.Accept());
 
-        ///TODO: change up this section
-        threads.push_back(getpid()); ///TODO: what is this for?
-        ServerThread* serverThread = new ServerThread(server); ///TODO: what is this for?
+        threadArray.push_back(getpid()); // Get the process ID and add it to the thread array
+        ServerThread* serverThread = new ServerThread(server); // Creating a new server thread
 
         // A reference to this pointer 
         Socket& socketReference = *newConnection;
 
-	    while(true) { ///TODO: what is the loop for?    
+        // Manipulate the received input so that it is not the same when it is transmitted back
+	    while(true) { // Keeps loop open indefinitely  
             // Wait for data
-            socketReference.Read(data);
+            socketReference.Read(textInput);
 
-            store = data.ToString(); ///TODO:
-            cout << store << endl; ///TODO:
+            temp = textInput.ToString(); // Convert the data into a string
+            cout << temp << endl; // Print the data string
 
-            for(int x = 0; x < store.length(); x++) { ///TODO:
-                store[x] = toupper(store[x]); ///TODO:
-            }
+            reverseLetters(temp); // Reverse the letters in the string
 
-            data = ByteArray(store); ///TODO:
+            textInput = ByteArray(temp); // Convert the modified text back into bytes
 
             // Send it back
-            socketReference.Write(data);
+            socketReference.Write(textInput);
         }
         
 	    return 1;
     }
 };
+
+// Function that reverses the order of the letters in a string
+void reverseLetters(string& text) {
+    int textLength = text.length();
+
+    // Swap the pairs of letters in the string
+    for(int x = 0; x < textLength/2; x++) {
+        swap(text[x], text[textLength - x - 1]);
+    }
+}
 
 
 int main(void)
