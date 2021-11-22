@@ -5,9 +5,12 @@
 #include <list>
 #include <vector>
 #include <algorithm>
+#include <signal.h> ///TODO: what is this for?
 
 using namespace Sync;
 using namespace std; // So that declarations don't have to be prefaced with 'std::'
+
+std::vector<int> threads; ///TODO:
 
 // This thread handles the server operations
 class ServerThread : public Thread
@@ -23,7 +26,7 @@ public:
     {
         // Cleanup
         ///TODO: write comment for what this does
-        for(vector<int>::iterator x = thread.begin(); x != thread.end(); x++) {
+        for(vector<int>::iterator x = threads.begin(); x != threads.end(); x++) {
             kill(*x, SIGKILL);
         }
     }
@@ -38,7 +41,7 @@ public:
         Socket* newConnection = new Socket(server.Accept());
 
         ///TODO: change up this section
-        thread.push_back(getpid()); ///TODO: what is this for?
+        threads.push_back(getpid()); ///TODO: what is this for?
         ServerThread* serverThread = new ServerThread(server); ///TODO: what is this for?
 
         // A reference to this pointer 
