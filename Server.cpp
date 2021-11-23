@@ -52,7 +52,11 @@ public:
             temp = textInput.ToString(); // Convert the data into a string
             cout << temp << endl; // Print the data string
 
-            reverseLetters(temp); // Reverse the letters in the string
+            // Reverse the letters in the string
+            int textLength = temp.length();
+            for(int x = 0; x < textLength/2; x++) {
+                swap(temp[x], temp[textLength - x - 1]); // Swap the pairs of letters in the string
+            }
 
             textInput = ByteArray(temp); // Convert the modified text back into bytes
 
@@ -63,17 +67,6 @@ public:
 	    return 1;
     }
 };
-
-// Function that reverses the order of the letters in a string
-void reverseLetters(string& text) {
-    int textLength = text.length();
-
-    // Swap the pairs of letters in the string
-    for(int x = 0; x < textLength/2; x++) {
-        swap(text[x], text[textLength - x - 1]);
-    }
-}
-
 
 int main(void)
 {
